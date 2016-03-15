@@ -86,6 +86,7 @@ static sg_offset_t parse_offset(const char *string){
   offset = atol(string);
   return offset;
 }
+int p=0;
 void simsleep(const char *const *action) {//the sleep function that creats and executes the task which only sleep
   const char *processid = action[0];
   const char *worker = action[1];
@@ -109,7 +110,7 @@ void simsleep(const char *const *action) {//the sleep function that creats and e
 else
  {
   MSG_task_set_category(task,"simsleep");
-     XBT_INFO("set category simworker %s","simsleep");
+  XBT_INFO("set category simworker %s","simsleep");
   TRACE_host_push_state(getpname(),"MyState","simsleep");
   MSG_task_execute(task);
   MSG_task_destroy(task);
@@ -317,20 +318,21 @@ int main(int argc, char *argv[]) {
   MSG_create_environment(argv[1]);
  /*  Simulation setting */
   msg_error_t res = MSG_OK;
-  TRACE_category_with_color ("simsleep", "1 0 0"); //red
-  TRACE_category_with_color ("simopen", "0 1 0");    //blue
-  TRACE_category_with_color ("simrelease", "0 1 1");//black
-  TRACE_category_with_color ("simread", "1 0 1"); //green
-  TRACE_category_with_color ("simcreat", "0 0.4 0.3");    //blue
-  TRACE_category_with_color ("simwrite", "0.3 0.4 0");//black
+  TRACE_category_with_color ("simsleep", "1 1 1"); //white
+  TRACE_category_with_color ("simopen", "0 0 0");    //black
+  TRACE_category_with_color ("simrelease", "0 0 0");//black
+  TRACE_category_with_color ("simread", "1 0 0"); //red
+  TRACE_category_with_color ("simcreat", "0 0 0");//black
+  TRACE_category_with_color ("simwrite", "0 0 1");//blue
   instr_new_user_state_type("MSG_PROCESS", "MyState"); 
-  TRACE_host_state_declare_value ("MyState", "simopen", "0 1 0");    //blue
-  TRACE_host_state_declare_value ("MyState", "simrelease", "0 1 1");//black
-  TRACE_host_state_declare_value ("MyState", "simread", "1 0 1"); //green
-  TRACE_host_state_declare_value ("MyState", "simsleep", "1 1 0");    //blue
-  TRACE_host_state_declare_value ("MyState", "simcreat", "0 0.4 0.3");    //blue
-  TRACE_host_state_declare_value ("MyState", "simwrite", "0.3 0.4 0");//black
-  /* No need to register functions as in classical MSG programs: the actions get started anyway */
+  TRACE_host_state_declare_value ("MyState", "simopen", "0 0 0");    //black
+  TRACE_host_state_declare_value ("MyState", "simcompute", "0 1 0");    //green
+  TRACE_host_state_declare_value ("MyState", "simrelease", "0 0 0");//black
+  TRACE_host_state_declare_value ("MyState", "simread", "1 0 0"); //red
+  TRACE_host_state_declare_value ("MyState", "simsleep", "1 1 1");    //white
+  TRACE_host_state_declare_value ("MyState", "simcreat", "0 0 0");   //black
+  TRACE_host_state_declare_value ("MyState", "simwrite", "0 0 1");//blue
+/* No need to register functions as in classical MSG programs: the actions get started anyway */
   MSG_launch_application(argv[2]);
   char *wh=argv[4];
   XBT_INFO("Your choose is %s",wh);
