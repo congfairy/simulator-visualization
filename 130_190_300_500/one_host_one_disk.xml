@@ -1,0 +1,33 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+
+<platform version="3">
+
+  <AS id="AS0" routing="Full">
+
+   <storage_type id="single_HDD" model="linear_no_lat" size="500GiB">
+      <model_prop id="Bwrite" value="130MBps" />
+      <model_prop id="Bread" value="190MBps" />
+      <model_prop id="Bconnection" value="120MBps" />
+   </storage_type>
+
+   <storage_type id="single_SSD" model="linear_no_lat" size="500GiB">
+      <model_prop id="Bwrite" value="300MBps" />
+      <model_prop id="Bread" value="500MBps" />
+      <model_prop id="Bconnection" value="220MBps" />
+   </storage_type>
+
+    <storage id="Disk1" typeId="single_SSD"
+             content="storage_content.txt"
+             content_type="txt_unix" attach="denise"/>
+
+    <storage id="Disk2" typeId="single_HDD"
+             content="storage_content.txt"
+             content_type="txt_unix" attach="denise"/>
+   
+    <host id="denise" power="1Gf" core="5">
+      <mount storageId="Disk1" name="/fast"/>	
+      <mount storageId="Disk2" name="/slow"/>	
+    </host>
+  </AS>
+</platform>

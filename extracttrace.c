@@ -87,7 +87,9 @@ static sg_offset_t parse_offset(const char *string){
   return offset;
 }
 int p=0;
+int i=0;
 void simsleep(const char *const *action) {//the sleep function that creats and executes the task which only sleep
+  i++;  
   const char *processid = action[0];
   const char *worker = action[1];
   const char *worktime = action[3];
@@ -96,6 +98,7 @@ void simsleep(const char *const *action) {//the sleep function that creats and e
   sleeptime = atof(worktime); 
   msg_task_t task=NULL;
   task = MSG_task_create("simsleep",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
+// task = MSG_task_create("simsleep",sleeptime,0,NULL);
   char simworker[80]="sim";
   strcat(simworker,worker);
  if(strcmp(simworker,"simopen")==0||strcmp(simworker,"simcreat")==0||strcmp(simworker,"simrelease")==0||strcmp(simworker,"simread")==0||strcmp(simworker,"simwrite")==0)
@@ -109,8 +112,8 @@ void simsleep(const char *const *action) {//the sleep function that creats and e
  }
 else
  {
-  MSG_task_set_category(task,"simsleep");
-  XBT_INFO("set category simworker %s","simsleep");
+//  MSG_task_set_category(task,"simsleep");
+ // XBT_INFO("set category simworker %s","simsleep");
   TRACE_host_push_state(getpname(),"MyState","simsleep");
   MSG_task_execute(task);
   MSG_task_destroy(task);
@@ -118,7 +121,7 @@ else
  }
  // MSG_process_sleep(sleeptime); 
   log_action(action, MSG_get_clock() - clock);
-  XBT_INFO("%s  worker %s is done,time is %s",worker,processid,worktime);
+  XBT_INFO("%s  worker %s is done,time is %s ",worker,processid,worktime);
 }
 
 static void simopen(const char *const *action) {
@@ -135,7 +138,7 @@ static void simopen(const char *const *action) {
   //open slow filename
   const char *file_name = action[2];
   msg_task_t task=NULL;
-  task = MSG_task_create("simopen",sleeptime,0,NULL);
+  task = MSG_task_create("simopen",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
   MSG_task_set_category(task,"simopen");
   TRACE_host_push_state(getpname(),"MyState","simopen");
   MSG_task_execute(task);
@@ -171,7 +174,7 @@ static void simrelease(const char *const *action) {
   sleeptime = atof(worktime);
   MSG_process_sleep(sleeptime);
   msg_task_t task=NULL;
-  task = MSG_task_create("simrelease",sleeptime,0,NULL);
+  task = MSG_task_create("simrelease",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
   MSG_task_set_category(task,"simrelease");
   TRACE_host_push_state(getpname(),"MyState","simrelease");
   MSG_task_execute(task);
@@ -203,7 +206,7 @@ static void simread(const char *const *action) {
   sg_size_t size = parse_size(size_str);
   sg_offset_t position= parse_offset(position_str);
   msg_task_t task=NULL;
-  task = MSG_task_create("simread",sleeptime,0,NULL);
+  task = MSG_task_create("simread",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
   MSG_task_set_category(task,"simread");
   TRACE_host_push_state(getpname(),"MyState","simread");
   MSG_task_execute(task);
@@ -255,7 +258,7 @@ static void simcreat(const char *const *action) {
   MSG_process_sleep(sleeptime);
   
   msg_task_t task=NULL;
-  task = MSG_task_create("simcreat",sleeptime,0,NULL);
+  task = MSG_task_create("simcreat",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
   MSG_task_set_category(task,"simcreat");
   TRACE_host_push_state(getpname(),"MyState","simcreat");
   MSG_task_execute(task);
@@ -295,7 +298,7 @@ static void simwrite(const char *const *action) {
   msg_task_t task=NULL;
   double sleeptime;
   sleeptime = atof(worktime);
-  task = MSG_task_create("simwrite",sleeptime,0,NULL);
+  task = MSG_task_create("simwrite",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
   MSG_task_set_category(task,"simwrite");
   TRACE_host_push_state(getpname(),"MyState","simwrite");
   MSG_task_execute(task);
