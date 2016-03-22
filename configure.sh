@@ -173,20 +173,33 @@ var=0;
 return var; 
 }
 {
-ppid=compare($12,$9,$10);
+if($12=="release")
+{
+ppid=compare($12,$9,$13);
 dur=compute($1,$2,ppid);
 if(dur>0)
-{printf("%s %s %s %.9f\n",ppid,"compute",$10,dur*(1e-9))}
+{printf("%s %s %s %.9f\n",ppid,"compute",$10,dur*(1e-9));
+printf("%s %s %s %.9f %s\n",ppid,$12,$10,$3*(1e-9),$13)
+}
+}
+else{
+dur=compute($1,$2,$9);
+if(dur>0)
+{printf("%s %s %s %.9f\n",$9,"compute",$10,dur*(1e-9))}
 if($12=="read")
-{printf("%s %s %s %.9f %s %s %s\n",ppid,$12,$10,$3*(1e-9),$17,$14,$15)}
+{printf("%s %s %s %.9f %s %s %s\n",$9,$12,$10,$3*(1e-9),$17,$14,$15)}
 else if($12=="write")
-{printf("%s %s %s %.9f %s %s %s\n",ppid,$12,$10,$3*(1e-9),$16,$13,$14)}
+{printf("%s %s %s %.9f %s %s %s\n",$9,$12,$10,$3*(1e-9),$16,$13,$14)}
 else if($12=="open")
-{printf("%s %s %s %.9f %s\n",ppid,$12,$10,$3*(1e-9),$17)}
-else if($12=="creat"||$12=="flush")
-{printf("%s %s %s %.9f %s\n",ppid,$12,$10,$3*(1e-9),$15)}
-else if($12=="release")
-{printf("%s %s %s %.9f %s\n",ppid,$12,$10,$3*(1e-9),$13)}
+{
+ppid=compare($12,$9,$17);
+printf("%s %s %s %.9f %s\n",ppid,$12,$10,$3*(1e-9),$17)}
+else if($12=="creat")
+{
+ppid=compare($12,$9,$15);
+printf("%s %s %s %.9f %s\n",ppid,$12,$10,$3*(1e-9),$15)}
+else if($12=="flush")
+{printf("%s %s %s %.9f %s\n",$9,$12,$10,$3*(1e-9),$15)}
 else
-{printf("%s %s %s %.9f\n",ppid,$12,$10,$3*(1e-9))}
-}'  >$fileactiontrace
+{printf("%s %s %s %.9f\n",$9,$12,$10,$3*(1e-9))}
+}}'  >$fileactiontrace
