@@ -17,10 +17,18 @@ The main goal of developing the utility is to using the data got from LSST to si
    command_sleep.sh is a shell script with the command to run the simulator with sleeping function for the trace file:lsst-demo-v10.1-ubuntu-v14.04-cluefs.csv
 * The format of directory 30_100_120_200 is Write-bandwidth(slow)_Read-bandwidth(slow)_Write-bandwidth(fast)_Read-bandwidth(fast).In the directory,there  is the platform.xml which correspond to the parameters.
 * When you want to run the program , use the command:
- e.g: ./command_action.sh 30_100_120_200
+ e.g: ./command_action.sh 30_100_120_200 32
+32 is that you want to read 32 kb from the fast disk.
 Then you will find the result: logaction file in the directory 30_100_120_200.You can check the log and find something useful.
 * in the command_action.sh file ,there is the following command
 :./extracttrace --log=replay.thres:verbose --cfg=surf/precision:1e-9 $1/one_host_one_disk.xml lsst-demo-v10.1-ubuntu-v14.04-cluefs_deployment.xml lsst-demo-v10.1-ubuntu-v14.04-cluefs_action_trace.txt action >& $1/logaction
+
+* command_action_randr-psync.sh,command_action_randrw-psync.sh,command_action_read_psync.sh,command_sleep_randr-psync.sh,command_sleep_randrw-psync.sh,command_sleep_read_psync.sh are the command for running the simulator to simulate the trace for fio aciton.
+
+* drawlineplots.py drawlineplots.sh is used for drawing some plot to compare how the application will work with different size store in the fast disk .
+
+*tracetransfer.sh is to do some transfer fome the trace we got from the simulator to the trace needed by framesoc.
+
  * platform.xml:In order to run any simulation, SimGrid must be provided with three things: something to run (i.e., your code), a description of the platform on which you want to simulate your application and lastly information about the deployment process.http://simgrid.gforge.inria.fr/simgrid/3.12/doc/platform.html
  
  * deployment.xml:When using SimGrid, you basically need your user code, a platform description, and something allowing to map your (simulated) process on your (simulated) platform. This is what deployment file is all about.So deployment file just consists of saying which process runs where and which arguments it should take as input.http://simgrid.gforge.inria.fr/simgrid/3.12/doc/deployment.html
@@ -45,6 +53,7 @@ to get the comparetime.txt file which includes the difference of the start and e
 It will produce file comparetime.txt which includes all the time difference of starttime ,endtime and duration time.Then you can use python script to draw some picture to make it clear.
   for example: ./comparetime.sh cluefs-centos7-lsst_stack_demo-11.0_cvstime.xml 30_100_120_200/logaction_logtime.xml  
                python comparetimebarstart.py,python comparetimebarend.py,python comparetimebardur.py
+* 
 * some explanation of the extracttrace.c,I fulfill the simread function with the first 4096 block store in the fast disk and others (the data)store on the slow disk,and the simwrite function is that all the data are write to the slow disk
 
 ### verify the simulator
