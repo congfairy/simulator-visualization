@@ -20,6 +20,7 @@ The main goal of developing the utility is to using the data got from LSST to si
  e.g: ./command_action.sh 30_100_120_200 32
 32 is that you want to read 32 kb from the fast disk.
 Then you will find the result: logaction file in the directory 30_100_120_200.You can check the log and find something useful.
+* action(sleep):It is a parameter to decide which action you want your simulator to do.
 * in the command_action.sh file ,there is the following command
 :./extracttrace --log=replay.thres:verbose --cfg=surf/precision:1e-9 $1/one_host_one_disk.xml lsst-demo-v10.1-ubuntu-v14.04-cluefs_deployment.xml lsst-demo-v10.1-ubuntu-v14.04-cluefs_action_trace.txt action >& $1/logaction
 
@@ -29,19 +30,18 @@ Then you will find the result: logaction file in the directory 30_100_120_200.Yo
 
 * tracetransfer.sh is to do some transfer fome the trace we got from the simulator to the trace needed by framesoc.
 
- * platform.xml:In order to run any simulation, SimGrid must be provided with three things: something to run (i.e., your code), a description of the platform on which you want to simulate your application and lastly information about the deployment process.http://simgrid.gforge.inria.fr/simgrid/3.12/doc/platform.html
+* platform.xml:In order to run any simulation, SimGrid must be provided with three things: something to run (i.e., your code), a description of the platform on which you want to simulate your application and lastly information about the deployment process.http://simgrid.gforge.inria.fr/simgrid/3.12/doc/platform.html
  
- * deployment.xml:When using SimGrid, you basically need your user code, a platform description, and something allowing to map your (simulated) process on your (simulated) platform. This is what deployment file is all about.So deployment file just consists of saying which process runs where and which arguments it should take as input.http://simgrid.gforge.inria.fr/simgrid/3.12/doc/deployment.html
+* deployment.xml:When using SimGrid, you basically need your user code, a platform description, and something allowing to map your (simulated) process on your (simulated) platform. This is what deployment file is all about.So deployment file just consists of saying which process runs where and which arguments it should take as input.http://simgrid.gforge.inria.fr/simgrid/3.12/doc/deployment.html
  
- * action_trace.txt:It describes the actions that each process executes.It is needed when simgrid replay the trace.
+* action_trace.txt:It describes the actions that each process executes.It is needed when simgrid replay the trace.
     The format of this file is :
     pid,action,filepath,duration,openid(open,read,write,flush,release,creat,readdir),position(read,write),bytereq(read,write)
      
- * storage_content.txt:It describes the initial state of the storage disk.
+* storage_content.txt:It describes the initial state of the storage disk.
     The format of this file is:filepath,filesize
     This file is used in the platform.xml .
 
- * action(sleep):It is a parameter to decide which action you want your simulator to do.
 * When you want to draw pictures of the executing time of different platform .You can run ./gettime.sh to get the file gettime.txt which includes the platform information and the executing time ,then you run: python script.py to get the picture in the images directory,thirdly run: display images/plot1.png to show the picture.To make it clear the steps are:
 		1:./gettime.sh
 		2:python script.py
@@ -53,7 +53,7 @@ to get the comparetime.txt file which includes the difference of the start and e
 It will produce file comparetime.txt which includes all the time difference of starttime ,endtime and duration time.Then you can use python script to draw some picture to make it clear.
   for example: ./comparetime.sh cluefs-centos7-lsst_stack_demo-11.0_cvstime.xml 30_100_120_200/logaction_logtime.xml  
                python comparetimebarstart.py,python comparetimebarend.py,python comparetimebardur.py
-* 
+
 * some explanation of the extracttrace.c,I fulfill the simread function with the first 4096 block store in the fast disk and others (the data)store on the slow disk,and the simwrite function is that all the data are write to the slow disk
 
 ### verify the simulator
