@@ -12,7 +12,7 @@
 #include "xbt/asserts.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay, "Messages specific for this example");
 static xbt_dict_t opened_files = NULL;
-
+int headsize;
 #define ACT_DEBUG(...) \
   if (XBT_LOG_ISENABLED(replay, xbt_log_priority_verbose)) {  \
     char *NAME = xbt_str_join_array(action, " ");              \
@@ -134,7 +134,7 @@ static void simopen(const char *const *action) {
   double clock = MSG_get_clock();       /* this "call" is free thanks to inlining */
   //Because the action open is too fast ,to catch up with the clock of the simulator, we let it to sleep for a while.
   sleeptime = atof(worktime);
-  MSG_process_sleep(sleeptime);
+  //MSG_process_sleep(sleeptime);
   //open slow filename
   const char *file_name = action[2];
   msg_task_t task=NULL;
@@ -172,7 +172,7 @@ static void simrelease(const char *const *action) {
   double clock = MSG_get_clock();       /* this "call" is free thanks to inlining */
   //Because the action release is too fast ,to catch up with the clock of the simulator, we let it to sleep for a while.
   sleeptime = atof(worktime);
-  MSG_process_sleep(sleeptime);
+  //MSG_process_sleep(sleeptime);
   msg_task_t task=NULL;
   task = MSG_task_create("simrelease",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
   MSG_task_set_category(task,"simrelease");
@@ -214,25 +214,28 @@ static void simread(const char *const *action) {
   TRACE_host_pop_state(getpname(),"MyState");
   double clock = MSG_get_clock();       /* this "call" is free thanks to inlining */
   
-  if(position<4096 && (position+size)<4096)
+  if(position<headsize && (position+size)<=headsize)
   {
   file = get_file_descriptor("fast",file_name,index);
   ACT_DEBUG("Entering Read: %s (size: %llu)", NAME, size);
   MSG_file_seek(file,position,SEEK_SET);
   MSG_file_read(file, size);
+  XBT_INFO("1 position is  %llu ,size is %llu",position,size);
+ 
   }
-  else if(position<4096 && (position+size)>4096)
+  else if(position<headsize && (position+size)>headsize)
   {
   //read the Head part
   file = get_file_descriptor("fast",file_name,index);
   ACT_DEBUG("Entering Read: %s (size: %llu)", NAME, size);
   MSG_file_seek(file,position,SEEK_SET);
-  MSG_file_read(file, (4096-position));
+  MSG_file_read(file, (headsize-position));
   //read the data part
   file = get_file_descriptor("slow",file_name,index);
   ACT_DEBUG("Entering Read: %s (size: %llu)", NAME, size);
-  MSG_file_seek(file,4096,SEEK_SET);
-  MSG_file_read(file, size-(4096-position));
+  MSG_file_seek(file,headsize,SEEK_SET);
+  MSG_file_read(file, size-(headsize-position));
+  XBT_INFO("2 position is  %llu ,size is %llu",position,size);
   }
   else
   {
@@ -255,7 +258,7 @@ static void simcreat(const char *const *action) {
   msg_file_t file = NULL;
   double clock = MSG_get_clock();       /* this "call" is free thanks to inlining */
   sleeptime = atof(worktime);
-  MSG_process_sleep(sleeptime);
+  //MSG_process_sleep(sleeptime);
   
   msg_task_t task=NULL;
   task = MSG_task_create("simcreat",sleeptime*MSG_get_host_speed(MSG_host_self()),0,NULL);
@@ -339,6 +342,7 @@ int main(int argc, char *argv[]) {
   MSG_launch_application(argv[2]);
   char *wh=argv[4];
   XBT_INFO("Your choose is %s",wh);
+  headsize=atoi(argv[5]);
   xbt_replay_action_register("unlink", simsleep);//register the action
   xbt_replay_action_register("compute", simsleep);//register the action
   xbt_replay_action_register("access", simsleep);
@@ -369,7 +373,7 @@ int main(int argc, char *argv[]) {
   if(!opened_files)
   {opened_files = xbt_dict_new_homogeneous(NULL);}
   res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here
-
+  
   XBT_INFO("Simulation time %g", MSG_get_clock());
   if(opened_files)
 	{xbt_dict_free(&opened_files);}
