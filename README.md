@@ -27,7 +27,7 @@ Then you will find the result: logaction file in the directory 30_100_120_200.Yo
 
 * drawlineplots.py drawlineplots.sh is used for drawing some plot to compare how the application will work with different size store in the fast disk .
 
-*tracetransfer.sh is to do some transfer fome the trace we got from the simulator to the trace needed by framesoc.
+* tracetransfer.sh is to do some transfer fome the trace we got from the simulator to the trace needed by framesoc.
 
  * platform.xml:In order to run any simulation, SimGrid must be provided with three things: something to run (i.e., your code), a description of the platform on which you want to simulate your application and lastly information about the deployment process.http://simgrid.gforge.inria.fr/simgrid/3.12/doc/platform.html
  
